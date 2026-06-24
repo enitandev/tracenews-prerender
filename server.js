@@ -55,10 +55,33 @@ const inMemoryCache = {
     }
 };
 
+// Custom plugin to remove scripts but KEEP JSON-LD schema
+const preserveJsonLd = {
+    beforeSend: (req, res, next) => {
+        if (!req.prerender.content || req.prerender.renderType !== 'html') {
+            return next();
+        }
+        
+        const matches = req.prerender.content.toString().match(/<script(?:.*?)>(?:[\s\S]*?)<\/script>/gi);
+        let content = req.prerender.content.toString();
+        
+        if (matches) {
+            matches.forEach((script) => {
+                if (!script.includes('application/ld+json')) {
+                    content = content.replace(script, '');
+                }
+            });
+        }
+        
+        req.prerender.content = content;
+        next();
+    }
+};
+
 server.use(prerender.sendPrerenderHeader());
 server.use(prerender.browserForceRestart());
 server.use(prerender.httpHeaders());
-server.use(prerender.removeScriptTags());
+server.use(preserveJsonLd);
 server.use(inMemoryCache);
 
 server.start();
