@@ -78,7 +78,7 @@ const preserveJsonLd = {
     }
 };
 
-server.use(prerender.sendPrerenderHeader());
+// server.use(prerender.sendPrerenderHeader()); // REMOVED: causes CORS failure on fonts and API
 server.use(prerender.browserForceRestart());
 server.use(prerender.httpHeaders());
 server.use(preserveJsonLd);
