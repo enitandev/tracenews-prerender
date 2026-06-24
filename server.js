@@ -3,6 +3,8 @@ const cache = require('memory-cache');
 
 const server = prerender({
     port: process.env.PORT || 3000,
+    pageLoadTimeout: 20000,
+    waitAfterLastRequest: 500,
     chromeFlags: [
         '--no-sandbox',
         '--headless',
